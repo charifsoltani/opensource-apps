@@ -41,6 +41,11 @@ class IrActionsReport(models.Model):
         """
         MAX_LEN_FILES = int(self.env['ir.config_parameter'].sudo().get_param('base.wkhtmltopdf_max_files', 20))
 
+        if 'ledger' in report_ref or 'trial' in report_ref:
+            # bypass ledger and trial reports as they give errors as res_ids does not create a page per doc
+            # TODO: Find a smart way to check such type of reports
+            return super()._render_qweb_pdf(report_ref, res_ids=res_ids, data=data)
+
         if res_ids and len(res_ids) < MAX_LEN_FILES:
             return super()._render_qweb_pdf(report_ref, res_ids=res_ids, data=data)
 
